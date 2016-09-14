@@ -9,29 +9,41 @@ public class NoteBook {
 		folders = new ArrayList<Folder>();
 	}
 	
-	public boolean creatTextNote(String folderName, String title){
+	public boolean createTextNote(String folderName, String title){
 		TextNote note = new TextNote(title);
 		return insertNote(folderName,note);
 	}
 	
-	public boolean creatImageNote(String folderName, String title){
+	public boolean createImageNote(String folderName, String title){
 		ImageNote note = new ImageNote(title);
 		return insertNote(folderName,note);
 	}
 	
-	public ArrayList<Folder> getFolder(){
+	public ArrayList<Folder> getFolders(){
 		return folders;
 	}
 	
 	public boolean insertNote(String folderName, Note note)
 	{
-		boolean checkExist = false;
-		for (int i = 0; i < folders.size(); i++)
-		{
-			if (folders.get(i).getName() == folderName) checkExist = true;
-		}
 		
-		if(!checkExist)	folders.add(new Folder(folderName));
+		Folder f = null;
+		for (Folder f1 : folders) {
+			if (f1.equals(new Folder(folderName))){
+				f = f1;
+			}
+		}
+		if (f == null) {
+			f  = new Folder(folderName);
+			folders.add(f);
+		}
+		for (Note n : f.getNotes()) {
+			if (n.equals(note)) {
+				System.out.println("Creating note " + n.getTitle() + " under folder " + folderName + " failed");
+				return false;
+			}
+		}
+				f.getNotes().add(note);
+		return true;
 		
 	}
 }

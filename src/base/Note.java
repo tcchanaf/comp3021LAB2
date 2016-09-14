@@ -8,7 +8,7 @@ public class Note {
 	
 	public Note(String title){
 		this.title = title;
-		date = new Date();
+		date = new Date(System.currentTimeMillis());
 	}
 	
 	@Override

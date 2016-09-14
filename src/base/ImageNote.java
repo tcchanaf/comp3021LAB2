@@ -1,6 +1,6 @@
 package base;
 
-import com.sun.java.util.jar.pack.Package.File;
+import java.io.File;
 
 public class ImageNote extends Note{
 	private File image;
