@@ -1,8 +1,11 @@
 package base;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
-public class Note {
+public class Note implements Comparable<Note>{
 	private Date date;
 	private String title;;
 	
@@ -39,6 +42,56 @@ public class Note {
 	public String getTitle(){
 		return title;
 	}
+
+	@Override
+	public int compareTo(Note o) {
+		if(this.date.before(o.date)) return 1;
+		else if(this.date.after(o.date)) return -1;
+		else
+			return 0;
+	}
 	
+	
+	public String getContent() {
+		return null;
+	}
+
+	
+	public boolean search(String keyword){
+		if(this instanceof TextNote) return ( title.toLowerCase().contains(keyword) | this.getContent().toLowerCase().contains(keyword) );
+		else if(this instanceof ImageNote) return title.toLowerCase().contains(keyword);
+		
+		return false;
+	}
+
+	
+	public boolean searchMulti(String[] keywords){
+		ArrayList<Boolean> status = new ArrayList<Boolean>(Collections.nCopies(keywords.length, true));
+		
+		for( int i = 0; i < keywords.length; i++ ){
+			//System.out.println(i);
+			if (keywords[i].equals("or")){
+				status.set(i,this.search(keywords[i-1]) | this.search(keywords[i+1]));
+				//System.out.println(this.search(keywords[i-1]));
+				
+				status.set(i-1,this.search(keywords[i-1]) | this.search(keywords[i+1]));
+				status.set(i+1,this.search(keywords[i-1]) | this.search(keywords[i+1]));
+				i++;
+			}
+		}
+		boolean finStatus = true;
+		for(boolean b : status ){
+			finStatus = b & finStatus;
+			
+		}
+		
+		return finStatus;
+		
+	}
+	
+	
+	public String toString(){
+		return date.toString() + "\t" + title;
+	}
 
 }
