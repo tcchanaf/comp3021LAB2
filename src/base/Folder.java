@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Folder implements Comparable<Folder>{
+public class Folder implements Comparable<Folder>, java.io.Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Note> notes;
 	private String name;
 	
@@ -91,20 +95,52 @@ public class Folder implements Comparable<Folder>{
 	
 	
 	public List<Note> searchNotes(String keywords){
-		String[] input = keywords.toLowerCase().split(" ");
-		ArrayList<Note> result = new ArrayList<Note>();
-		for(String i : input){
-			i = i.toLowerCase();
+//		String[] input = keywords.toLowerCase().split(" ");
+//		ArrayList<Note> result = new ArrayList<Note>();
+//		for(String i : input){
+//			i = i.toLowerCase();
+
+		List<Note> list = new ArrayList<Note>();
+		String[] keyword = keywords.toLowerCase().split(" ");
+		for(Note n : this.notes){
 			
-		}
-		
-		for ( Note i : notes){
-			if (i.searchMulti(input) ){
-				result.add(i);
+			//Just to have the method getClass on this object
+			TextNote textNote = new TextNote("tmp_to_delete");
+			
+			String title=n.toString().toLowerCase();
+			
+			int index=0;
+			int addedOnce=0;
+			while(index < keyword.length && addedOnce == 0 ){
+				if(index +1 < keyword.length && keyword[index+1]=="or"){
+					if(n.getClass()==textNote.getClass()){
+						if(title.contains(keyword[index])||((TextNote) n).getContent().contains(keyword[index])||title.contains(keyword[index+2])||((TextNote) n).getContent().contains(keyword[index+2])){
+							list.add(n);
+							addedOnce =1;
+							//System.out.println("1:"+index);
+						}
+					}else{
+						if(title.contains(keyword[index])||title.contains(keyword[index+2])){
+							list.add(n);
+							addedOnce =1;
+							//System.out.println("2:"+index);
+						}
+					}
+					index=index+3;
+				}else{
+					//Here TextNote and ImageNote
+					if(n.getClass()==textNote.getClass()){
+						if(title.contains(keyword[index])||((TextNote) n).getContent().contains(keyword[index])){
+							list.add(n);
+							addedOnce =1;
+							//System.out.println("3:"+index);
+						}
+					}
+					index++;
+				}
 			}
 		}
-		
-		return result;
+		return list;
 	}
 	
 

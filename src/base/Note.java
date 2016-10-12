@@ -4,8 +4,13 @@ package base;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
-public class Note implements Comparable<Note>{
+public class Note implements Comparable<Note>, java.io.Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Date date;
 	private String title;;
 	
@@ -66,18 +71,20 @@ public class Note implements Comparable<Note>{
 
 	
 	public boolean searchMulti(String[] keywords){
-		ArrayList<Boolean> status = new ArrayList<Boolean>(Collections.nCopies(keywords.length, true));
+		ArrayList<Boolean> status = new ArrayList<Boolean>(Collections.nCopies(keywords.length, false));
 		
 		for( int i = 0; i < keywords.length; i++ ){
 			//System.out.println(i);
 			if (keywords[i].equals("or")){
-				status.set(i,this.search(keywords[i-1]) | this.search(keywords[i+1]));
+				
+				status.set(i,this.search(keywords[i-1]) | this.search(keywords[i+1]) | status.get(i-1));
 				//System.out.println(this.search(keywords[i-1]));
 				
-				status.set(i-1,this.search(keywords[i-1]) | this.search(keywords[i+1]));
-				status.set(i+1,this.search(keywords[i-1]) | this.search(keywords[i+1]));
-				i++;
+				status.set(i-1,this.search(keywords[i-1]) | this.search(keywords[i+1]) | status.get(i-1));
+				status.set(i+1,this.search(keywords[i-1]) | this.search(keywords[i+1]) | status.get(i-1));
+				i+=2;
 			}
+			
 		}
 		boolean finStatus = true;
 		for(boolean b : status ){
@@ -88,6 +95,23 @@ public class Note implements Comparable<Note>{
 		return finStatus;
 		
 	}
+	
+	
+	
+	public boolean contains(String key){
+		return title.toLowerCase().contains(key.toLowerCase());
+	}
+	
+	public boolean containsOr(List<String> keys) {
+		for (int i = 0; i < keys.size(); i++){
+			if (contains(keys.get(i)))
+				return true;
+		}
+		return false;
+	}
+	
+	
+	
 	
 	
 	public String toString(){
