@@ -100,48 +100,117 @@ public class Folder implements Comparable<Folder>, java.io.Serializable{
 //		for(String i : input){
 //			i = i.toLowerCase();
 
-		List<Note> list = new ArrayList<Note>();
-		String[] keyword = keywords.toLowerCase().split(" ");
-		for(Note n : this.notes){
-			
-			//Just to have the method getClass on this object
-			TextNote textNote = new TextNote("tmp_to_delete");
-			
-			String title=n.toString().toLowerCase();
-			
-			int index=0;
-			int addedOnce=0;
-			while(index < keyword.length && addedOnce == 0 ){
-				if(index +1 < keyword.length && keyword[index+1]=="or"){
-					if(n.getClass()==textNote.getClass()){
-						if(title.contains(keyword[index])||((TextNote) n).getContent().contains(keyword[index])||title.contains(keyword[index+2])||((TextNote) n).getContent().contains(keyword[index+2])){
-							list.add(n);
-							addedOnce =1;
-							//System.out.println("1:"+index);
-						}
-					}else{
-						if(title.contains(keyword[index])||title.contains(keyword[index+2])){
-							list.add(n);
-							addedOnce =1;
-							//System.out.println("2:"+index);
-						}
-					}
-					index=index+3;
-				}else{
-					//Here TextNote and ImageNote
-					if(n.getClass()==textNote.getClass()){
-						if(title.contains(keyword[index])||((TextNote) n).getContent().contains(keyword[index])){
-							list.add(n);
-							addedOnce =1;
-							//System.out.println("3:"+index);
-						}
-					}
-					index++;
-				}
-			}
+//		List<Note> list = new ArrayList<Note>();
+//		String[] keyword = keywords.toLowerCase().split(" ");
+//		for(Note n : this.notes){
+//			
+//			//Just to have the method getClass on this object
+//			TextNote textNote = new TextNote("tmp_to_delete");
+//			
+//			String title=n.toString().toLowerCase();
+//			
+//			int index=0;
+//			int addedOnce=0;
+//			while(index < keyword.length && addedOnce == 0 ){
+//				if(index +1 < keyword.length && keyword[index+1]=="or"){
+//					if(n.getClass()==textNote.getClass()){
+//						if(title.contains(keyword[index])||((TextNote) n).getContent().contains(keyword[index])||title.contains(keyword[index+2])||((TextNote) n).getContent().contains(keyword[index+2])){
+//							list.add(n);
+//							addedOnce =1;
+//							//System.out.println("1:"+index);
+//						}
+//					}else{
+//						if(title.contains(keyword[index])||title.contains(keyword[index+2])){
+//							list.add(n);
+//							addedOnce =1;
+//							//System.out.println("2:"+index);
+//						}
+//					}
+//					index=index+3;
+//				}else{
+//					//Here TextNote and ImageNote
+//					if(n.getClass()==textNote.getClass()){
+//						if(title.contains(keyword[index])||((TextNote) n).getContent().contains(keyword[index])){
+//							list.add(n);
+//							addedOnce =1;
+//							//System.out.println("3:"+index);
+//						}
+//					}
+//					index++;
+//				}
+//			}
+//		}
+//		return list;
+		ArrayList<Note> found_notes = new ArrayList<Note>();
+		for(Note n : this.notes) {
+			found_notes.add(n);
 		}
-		return list;
+		String[] keywords_arr = keywords.split(" ");
+		int keyword_length = keywords_arr.length;
+		
+		ArrayList<String> boundWithOR = new ArrayList<String>();
+		
+		for(int count = 0; count < keyword_length; count++) {
+			if(found_notes.isEmpty())
+				return found_notes;
+			if(isOR(keywords_arr[count])) 
+				continue;
+			boundWithOR.add(keywords_arr[count]);
+			if(count < keyword_length-1 && isOR(keywords_arr[count+1])){
+				count++;
+				continue;
+			}
+			ArrayList<Note> toRemove = new ArrayList<Note>();
+			for(Note n : found_notes) {
+				boolean notContained = true;
+				for(String s : boundWithOR) {
+					if(contains(n,s)){
+						notContained = false;
+						break;
+					}
+				}
+				if(notContained)
+					toRemove.add(n);
+			}
+			found_notes.removeAll(toRemove);
+			boundWithOR.clear();
+		}
+		return found_notes;
 	}
 	
+	
+	
+	private boolean isOR(String str) {
+		if(str.equals("OR") || str.equals("Or") || str.equals("oR") || str.equals("or"))
+			return true;
+		return false;
+	}
+	
+	
+	
+	
+	private boolean contains(Note n, String keyword) {
+		if(n instanceof ImageNote)
+			return n.getTitle().toLowerCase().contains(keyword.toLowerCase());
+		else if(n instanceof TextNote) {
+			TextNote n_ = (TextNote)n;
+			return n_.getTitle().toLowerCase().contains(keyword.toLowerCase()) || n_.getContent().toLowerCase().contains(keyword.toLowerCase());
+		}
+		
+		return false;
+		
+	}
+	
+	
+	public boolean removeNotes(String title){
+		for(Note n : notes){
+			if(n.getTitle().equals(title)){
+				notes.remove(notes.indexOf(n));
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 }

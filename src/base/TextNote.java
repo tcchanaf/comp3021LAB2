@@ -56,21 +56,19 @@ public class TextNote extends Note implements java.io.Serializable{
 	 * @throws FileNotFoundException 
 	*/
 	private String getTextFromFile(String absolutePath) throws FileNotFoundException {
-	String result = "";
-	// TODO
+		String result = "";
+		// TODO
 	
-	Scanner input = new Scanner(new File(absolutePath));
-	while (input.hasNext())
-	result += input.next() + " ";
-	input.close(); // important
+		Scanner input = new Scanner(new File(absolutePath));
+		while (input.hasNext())
+			result += input.next() + " ";
+		input.close(); // important
 	
-	// input from console
-//	Scanner console = new Scanner(System.in);
-//	console.close();
-	return result;
+		// input from console
+		//	Scanner console = new Scanner(System.in);
+		//	console.close();
+		return result;
 	}
-	
-	
 	
 	
 	
@@ -107,6 +105,9 @@ public class TextNote extends Note implements java.io.Serializable{
 	}
 	
 	
+	public void setContent(String content){
+		this.content = content;
+	}
 	
 	
 	

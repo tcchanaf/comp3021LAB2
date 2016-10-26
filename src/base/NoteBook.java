@@ -39,6 +39,13 @@ public class NoteBook implements java.io.Serializable{
 		return folders;
 	}
 	
+	
+	public void addFolder(String foldername){
+		folders.add(new Folder(foldername));
+	}
+	
+	
+	
 	public boolean insertNote(String folderName, Note note)
 	{
 		
